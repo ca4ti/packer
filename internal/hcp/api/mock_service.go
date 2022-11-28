@@ -54,9 +54,6 @@ func (svc *MockPackerClientService) PackerServiceCreateBucket(params *packerSvc.
 		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Code:%d %s", codes.AlreadyExists, codes.AlreadyExists.String()))
 	}
 
-	if params.Body == nil {
-		return nil, errors.New("No body provided.")
-	}
 	if params.Body.BucketSlug == "" {
 		return nil, errors.New("No bucket slug was passed in")
 	}
@@ -91,10 +88,6 @@ func (svc *MockPackerClientService) PackerServiceCreateIteration(params *packerS
 		return nil, status.Error(codes.AlreadyExists, fmt.Sprintf("Code:%d %s", codes.AlreadyExists, codes.AlreadyExists.String()))
 	}
 
-	if params.Body.BucketSlug == "" {
-		return nil, errors.New("No valid BucketSlug was passed in")
-	}
-
 	if params.Body.Fingerprint == "" {
 		return nil, errors.New("No valid Fingerprint was passed in")
 	}
@@ -108,7 +101,7 @@ func (svc *MockPackerClientService) PackerServiceCreateIteration(params *packerS
 		},
 	}
 
-	payload.Iteration.BucketSlug = params.Body.BucketSlug
+	payload.Iteration.BucketSlug = params.BucketSlug
 	payload.Iteration.Fingerprint = params.Body.Fingerprint
 
 	ok := &packerSvc.PackerServiceCreateIterationOK{
@@ -166,7 +159,7 @@ func (svc *MockPackerClientService) PackerServiceGetIteration(params *packerSvc.
 }
 
 func (svc *MockPackerClientService) PackerServiceCreateBuild(params *packerSvc.PackerServiceCreateBuildParams, _ runtime.ClientAuthInfoWriter) (*packerSvc.PackerServiceCreateBuildOK, error) {
-	if params.Body.BucketSlug == "" {
+	if params.BucketSlug == "" {
 		return nil, errors.New("No valid BucketSlug was passed in")
 	}
 
@@ -199,7 +192,7 @@ func (svc *MockPackerClientService) PackerServiceCreateBuild(params *packerSvc.P
 }
 
 func (svc *MockPackerClientService) PackerServiceUpdateBuild(params *packerSvc.PackerServiceUpdateBuildParams, _ runtime.ClientAuthInfoWriter) (*packerSvc.PackerServiceUpdateBuildOK, error) {
-	if params.Body.BuildID == "" {
+	if params.BuildID == "" {
 		return nil, errors.New("No valid BuildID was passed in")
 	}
 
@@ -218,7 +211,7 @@ func (svc *MockPackerClientService) PackerServiceUpdateBuild(params *packerSvc.P
 	ok := packerSvc.NewPackerServiceUpdateBuildOK()
 	ok.Payload = &models.HashicorpCloudPackerUpdateBuildResponse{
 		Build: &models.HashicorpCloudPackerBuild{
-			ID: params.Body.BuildID,
+			ID: params.BuildID,
 		},
 	}
 	return ok, nil
